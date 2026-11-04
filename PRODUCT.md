@@ -33,7 +33,7 @@ Corporate IT support in Mogi das Cruzes/SP and region. Requests arrive by phone,
 - Additional solutions: consultoria especializada, soluções em nuvem, segurança cibernética, controle de acesso, mudança de layout (moving), cabeamento estruturado, estruturação de servidores.
 - Plans: mensal and premium, both preceded by a free consultation.
 - Response times: 24h SLA; urgent cases 4h depending on location; immediate phone support without a queue.
-- Brands worked with: Intelbras, Microsoft, Bitdefender, Kingston, Fortinet, TP-Link.
+- Brands worked with: Dell, Microsoft, Bitdefender, Kingston, UniFi, MikroTik, TP-Link, Datasafer (backup).
 - Remote access: AnyDesk download.
 - Contact: (11) 9 4344-5125 (WhatsApp), (11) 3522-9896, comercial@protectlan.com; Avenida Prefeito Carlos Ferreira Lopes, 703, Sala 1201, 12º andar, Vila Nova Mogilar, Mogi das Cruzes/SP.
 - Social: facebook.com/Protectlan, instagram.com/protectlan.sp, linkedin.com/company/protectlan.
@@ -48,7 +48,7 @@ Name: Protectlan Informática. Existing white wordmark logo (public/brand/protec
 
 - Logo: public/brand/protectlan-branca.png (white wordmark, 296x66).
 - Service imagery downloaded from the current site under public/images/: consultoria.png, servidores.png, suporte-remoto.png, imagem-components-fisicos.png, imagem-backup-nuvem.png, imagem-antivirus-01.png, suporte-tecnico-corporativo.png, suporte-tecnico-avulso.jpg, img-redes-e-servidores-1.png.
-- Partner logos: Intelbras-logo-5-1.png, microsoft-logo-6.png, pngegg-1.png (Bitdefender), kingston-logo-4.png, fortinet-logo-1.png, tp-link-logo-5.png.
+- Partner logos: dell-logo.png, microsoft-logo.png, bitdefender-logo.png, kingston-logo.png, unifi-logo.svg, mikrotik-logo.png, tp-link-logo-5.png, datasafer-logo.svg.
 - Company text, mission, vision, values and service descriptions collected from protectlan.com.
 - No real testimonials, case studies, prices or team photos were provided; none may be fabricated.
 
