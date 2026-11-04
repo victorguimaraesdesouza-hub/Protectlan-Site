@@ -35,7 +35,8 @@ Corporate IT support in Mogi das Cruzes/SP and region. Requests arrive by phone,
 - Response times: 24h SLA; urgent cases 4h depending on location; immediate phone support without a queue.
 - Brands worked with: Dell, Microsoft, Bitdefender, Kingston, UniFi, MikroTik, TP-Link, Datasafer (backup).
 - Remote access: AnyDesk download.
-- Contact: (11) 9 4344-5125 (WhatsApp), (11) 3522-9896, comercial@protectlan.com; Avenida Prefeito Carlos Ferreira Lopes, 703, Sala 1201, 12º andar, Vila Nova Mogilar, Mogi das Cruzes/SP.
+- Contact: (11) 9 4344-5125 (WhatsApp), (11) 3522-9896, comercial@protectlan.com.
+- No fixed address: there is no office open to visitors. Service is remote (AnyDesk) or onsite at the client's premises with a scheduled visit, in Mogi das Cruzes/SP and region. Do not publish a street address.
 - Social: facebook.com/Protectlan, instagram.com/protectlan.sp, linkedin.com/company/protectlan.
 - The ticket area has no authentication in this build; tickets are stored locally in the visitor's browser and produce a protocol. No real server-side ticket delivery exists.
 - Do not invent prices, customer counts, certifications, founding dates, testimonials or benchmarks.
