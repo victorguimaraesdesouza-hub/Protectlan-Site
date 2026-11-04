@@ -137,6 +137,15 @@
     var readoutTitle = diagram.querySelector("[data-readout-title]");
     var readoutText = diagram.querySelector("[data-readout-text]");
     var readoutLink = diagram.querySelector("[data-readout-link]");
+    var links = Array.prototype.slice.call(diagram.querySelectorAll("[data-link]"));
+    var progress = diagram.querySelector(".plate-progress");
+    var order = ["remoto", "servidores", "backup", "seguranca", "cabeamento"];
+    var current = null;
+    var TOUR_MS = 4800;
+    var tourTimer = null;
+    var tourStopped = false;
+    var hovering = false;
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     var activate = function (id) {
       if (!id) return;
@@ -159,6 +168,19 @@
         }
       });
 
+      var readout = diagram.querySelector(".plate-readout");
+      if (readout && current !== id) {
+        readout.classList.remove("is-fresh");
+        void readout.offsetWidth;
+        readout.classList.add("is-fresh");
+      }
+      current = id;
+
+      links.forEach(function (el) {
+        var key = el.getAttribute("data-link");
+        el.classList.toggle("is-hot", id === "servidores" || key === id);
+      });
+
       if (readoutCode) readoutCode.textContent = source.getAttribute("data-code") || "";
       if (readoutTitle) readoutTitle.textContent = source.getAttribute("data-title") || "";
       if (readoutText) readoutText.textContent = source.getAttribute("data-text") || "";
@@ -168,18 +190,75 @@
       }
     };
 
+    var restartProgress = function () {
+      if (!progress) return;
+      progress.classList.remove("is-running");
+      void progress.offsetWidth;
+      if (!tourStopped) progress.classList.add("is-running");
+    };
+
+    var scheduleNext = function () {
+      clearTimeout(tourTimer);
+      if (tourStopped || reduceMotion) return;
+      restartProgress();
+      tourTimer = setTimeout(function tick() {
+        if (hovering) {
+          tourTimer = setTimeout(tick, 400);
+          return;
+        }
+        var next = order[(order.indexOf(current) + 1) % order.length];
+        activate(next);
+        scheduleNext();
+      }, TOUR_MS);
+    };
+
+    var stopTour = function () {
+      tourStopped = true;
+      clearTimeout(tourTimer);
+      if (progress) progress.classList.remove("is-running");
+    };
+
+    if (progress) progress.style.setProperty("--tour-ms", TOUR_MS + "ms");
+
+    diagram.addEventListener("mouseenter", function () { hovering = true; });
+    diagram.addEventListener("mouseleave", function () { hovering = false; });
+
+    nodes.forEach(function (node) {
+      node.addEventListener("click", function () {
+        stopTour();
+        activate(node.getAttribute("data-node"));
+      });
+    });
+
     points.forEach(function (button) {
       button.addEventListener("click", function () {
+        stopTour();
         activate(button.getAttribute("data-point"));
       });
       if (button.classList.contains("callout")) {
         button.addEventListener("focus", function () {
+          stopTour();
           activate(button.getAttribute("data-point"));
         });
       }
     });
 
     activate("remoto");
+
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      var tourObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            if (!tourStopped && !tourTimer) scheduleNext();
+          } else {
+            clearTimeout(tourTimer);
+            tourTimer = null;
+            if (progress) progress.classList.remove("is-running");
+          }
+        });
+      }, { threshold: 0.35 });
+      tourObserver.observe(diagram);
+    }
   }
 
   /* Handle images that fail to load -------------------------------------- */
