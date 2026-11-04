@@ -929,6 +929,10 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   text-decoration: none;
   transition: background-color 200ms ease, color 200ms ease;
 }
+@media (min-width: 1100px) {
+  .index-row { grid-template-columns: 92px minmax(0, 1fr) 30rem 40px; }
+  .row-desc { white-space: nowrap; }
+}
 .index-row:hover,
 .index-row:focus-visible {
   background: var(--blue);
