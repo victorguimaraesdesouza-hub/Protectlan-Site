@@ -927,14 +927,24 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   border-bottom: 1px solid var(--rule);
   color: var(--ink);
   text-decoration: none;
-  transition: background-color 200ms ease, color 200ms ease, padding-left 200ms ease;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 .index-row:hover,
 .index-row:focus-visible {
   background: var(--blue);
   color: var(--sheet);
-  padding-left: 14px;
 }
+.index-row .row-code,
+.index-row .row-name,
+.index-row .row-desc {
+  transition: color 200ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.index-row:hover .row-code,
+.index-row:hover .row-name,
+.index-row:hover .row-desc,
+.index-row:focus-visible .row-code,
+.index-row:focus-visible .row-name,
+.index-row:focus-visible .row-desc { transform: translateX(10px); }
 .index-row .row-code {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
