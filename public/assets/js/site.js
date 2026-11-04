@@ -105,6 +105,54 @@
     }
   }
 
+  var motionOK = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* Headline words ------------------------------------------------------- */
+  if (motionOK) {
+    doc.querySelectorAll("h1").forEach(function (h1) {
+      var i = 0;
+      var walk = function (node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+          if (child.nodeType === 3) {
+            var parts = child.textContent.split(/(\s+)/);
+            var frag = doc.createDocumentFragment();
+            parts.forEach(function (part) {
+              if (!part) return;
+              if (/^\s+$/.test(part)) {
+                frag.appendChild(doc.createTextNode(part));
+              } else {
+                var span = doc.createElement("span");
+                span.className = "w";
+                span.style.setProperty("--i", i++);
+                span.textContent = part;
+                frag.appendChild(span);
+              }
+            });
+            node.replaceChild(frag, child);
+          } else if (child.nodeType === 1 && child.tagName !== "BR") {
+            walk(child);
+          }
+        });
+      };
+      h1.setAttribute("aria-label", h1.textContent.replace(/\s+/g, " ").trim());
+      walk(h1);
+      Array.prototype.forEach.call(h1.querySelectorAll(".w"), function (w) {
+        w.setAttribute("aria-hidden", "true");
+      });
+      h1.classList.add("h1-anim");
+    });
+  }
+
+  /* Staggered groups ----------------------------------------------------- */
+  var staggerSelector = ".index-list, .solution-grid, .steps, .values, .faq, .client-channels, .plan-split, .product-wall";
+  doc.querySelectorAll(staggerSelector).forEach(function (group) {
+    if (!group.hasAttribute("data-reveal")) return;
+    group.classList.add("reveal-stagger");
+    Array.prototype.forEach.call(group.children, function (child, index) {
+      child.style.setProperty("--i", Math.min(index, 10));
+    });
+  });
+
   /* Reveal on scroll ----------------------------------------------------- */
   var revealNodes = Array.prototype.slice.call(doc.querySelectorAll("[data-reveal]"));
   if (revealNodes.length) {
@@ -117,8 +165,12 @@
       var revealObserver = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-in");
-            revealObserver.unobserve(entry.target);
+            var target = entry.target;
+            target.classList.add("is-in");
+            revealObserver.unobserve(target);
+            if (target.classList.contains("reveal-stagger")) {
+              setTimeout(function () { target.classList.remove("reveal-stagger"); }, 1800);
+            }
           }
         });
       }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
@@ -259,6 +311,80 @@
       }, { threshold: 0.35 });
       tourObserver.observe(diagram);
     }
+  }
+
+  /* Scroll progress ------------------------------------------------------ */
+  if (header && motionOK) {
+    var bar = doc.createElement("span");
+    bar.className = "scroll-progress";
+    bar.setAttribute("aria-hidden", "true");
+    header.appendChild(bar);
+    var ticking = false;
+    var updateBar = function () {
+      ticking = false;
+      var max = doc.documentElement.scrollHeight - window.innerHeight;
+      bar.style.setProperty("--progress", max > 0 ? Math.min(1, window.scrollY / max).toFixed(4) : 0);
+    };
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(updateBar); }
+    }, { passive: true });
+    window.addEventListener("resize", updateBar);
+    updateBar();
+  }
+
+  /* Count-up figures ----------------------------------------------------- */
+  var countNodes = Array.prototype.slice.call(doc.querySelectorAll("dd, b, strong")).filter(function (el) {
+    return !el.children.length && /^\d{1,3}\s?(h|horas)$/.test(el.textContent.trim());
+  });
+  if (motionOK && countNodes.length && "IntersectionObserver" in window) {
+    var countObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        countObserver.unobserve(entry.target);
+        var el = entry.target;
+        var match = el.textContent.trim().match(/^(\d+)(\s?.*)$/);
+        var target = parseInt(match[1], 10);
+        var suffix = match[2];
+        var start = null;
+        var duration = 1100;
+        var step = function (now) {
+          if (start === null) start = now;
+          var t = Math.min(1, (now - start) / duration);
+          var eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (t < 1) window.requestAnimationFrame(step);
+        };
+        el.textContent = "0" + suffix;
+        window.requestAnimationFrame(step);
+      });
+    }, { threshold: 0.6 });
+    countNodes.forEach(function (el) {
+      el.setAttribute("aria-label", el.textContent.trim());
+      countObserver.observe(el);
+    });
+  }
+
+  /* Protocol number shuffles before settling ----------------------------- */
+  var stubDigits = doc.querySelector(".stub-code span");
+  if (motionOK && stubDigits && "IntersectionObserver" in window) {
+    var finalDigits = stubDigits.textContent;
+    var stubObserver = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      stubObserver.disconnect();
+      var frames = 0;
+      var timer = setInterval(function () {
+        frames++;
+        if (frames > 16) {
+          clearInterval(timer);
+          stubDigits.textContent = finalDigits;
+          return;
+        }
+        stubDigits.textContent = finalDigits.split("").map(function (d, idx) {
+          return frames > 6 + idx * 3 ? d : String(Math.floor(Math.random() * 10));
+        }).join("");
+      }, 55);
+    }, { threshold: 0.6 });
+    stubObserver.observe(stubDigits);
   }
 
   /* Handle images that fail to load -------------------------------------- */

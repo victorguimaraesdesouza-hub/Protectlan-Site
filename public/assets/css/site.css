@@ -1122,29 +1122,31 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   border: 1px solid var(--ink);
   min-width: 0;
 }
-.product-plate--feature { grid-row: span 2; }
+.product-plate {
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 260ms ease;
+}
+.product-plate:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
 .product-media {
+  position: relative;
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 180px;
-  padding: 18px;
-  background:
-    linear-gradient(to right, rgba(48, 80, 129, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(48, 80, 129, 0.05) 1px, transparent 1px),
-    #fbfdfe;
-  background-size: 24px 24px;
+  overflow: hidden;
+  background: #fbfdfe;
   border-bottom: 1px solid var(--rule);
 }
 .product-plate--feature .product-media { min-height: 380px; }
 .product-media img {
-  max-height: 290px;
-  width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 22px rgba(11, 26, 38, 0.16));
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.product-plate--feature .product-media img { max-height: 410px; }
+.product-plate:hover .product-media img { transform: scale(1.05); }
 .product-body { padding: 18px 20px 20px; }
 .product-body .code { display: block; margin-bottom: 6px; }
 .product-body h3 { font-size: 1.25rem; }
@@ -1161,8 +1163,7 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   gap: 18px;
   min-height: 0;
 }
-.product-stack .product-media { min-height: 120px; padding: 12px; }
-.product-stack .product-media img { max-height: 110px; }
+.product-stack .product-media { min-height: 150px; }
 
 /* Plans ------------------------------------------------------------------- */
 .plan-split {
@@ -1890,7 +1891,11 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   font-size: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
   line-height: 1.45;
 }
-.about-grid--values { margin-top: clamp(36px, 5vw, 64px); }
+.about-grid--values {
+  margin-top: clamp(36px, 5vw, 64px);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+.value:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .about-subhead { margin-top: 36px; }
 .about-photo {
   margin: 0;
@@ -2705,7 +2710,6 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   .client-band .shell { grid-template-columns: 1fr; }
   .stamp-wrap { min-height: 0; justify-content: flex-start; }
   .product-wall { grid-template-columns: 1fr; }
-  .product-plate--feature { grid-row: auto; }
   .product-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; }
   .product-row { grid-template-columns: minmax(140px, 180px) minmax(0, 1fr); }
   .product-row-side {
@@ -2719,7 +2723,6 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   .cta-strip { grid-template-columns: 1fr; align-items: start; }
   .cta-strip .actions { justify-self: start; }
   .product-plate--feature .product-media { min-height: 300px; }
-  .product-plate--feature .product-media img { max-height: 320px; }
   .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .services-layout { grid-template-columns: 1fr; }
   .toc { position: static; }
@@ -2866,8 +2869,7 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   .hero-sub { margin-top: 18px; }
   .conditions { margin-top: 28px; }
   .product-stack { grid-template-columns: 1fr; }
-  .product-plate--feature .product-media { min-height: 250px; }
-  .product-plate--feature .product-media img { max-height: 260px; }
+  .product-plate--feature .product-media { min-height: 240px; }
   .product-row { grid-template-columns: 1fr; gap: 16px; }
   .product-row-media img { height: 200px; }
   .footer-grid { grid-template-columns: 1fr; gap: 28px; }
@@ -2945,4 +2947,154 @@ body.nav-open .menu-bars i:nth-child(3) { transform: translateY(-5.5px) rotate(-
   .track-form .btn { width: 100%; }
   .download-plate { padding: 20px; }
   .footer-brand img { width: 136px; }
+}
+
+/* ==========================================================================
+   Motion & interaction layer
+   ========================================================================== */
+
+/* Scroll progress under the header */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--green);
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+  pointer-events: none;
+}
+
+/* Headline words rise in on load */
+.js .h1-anim .w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.35em);
+  animation: word-in 760ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 70ms + 80ms);
+}
+@keyframes word-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* Staggered children inside revealed groups */
+.js .reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 200ms ease;
+  transition-delay: calc(var(--i, 0) * 70ms + 120ms), calc(var(--i, 0) * 70ms + 120ms), 0ms;
+}
+.js .reveal-stagger.is-in > * { opacity: 1; transform: none; }
+
+/* Rows and cells respond to the cursor */
+.solution,
+.value,
+.step {
+  transition: background-color 200ms ease;
+}
+.solution:hover,
+.value:hover,
+.step:hover { background-color: rgba(255, 255, 255, 0.75); }
+.solution-code,
+.value-code,
+.step-code { transition: color 200ms ease, transform 200ms ease; display: inline-block; }
+.solution:hover .solution-code,
+.value:hover .value-code,
+.step:hover .step-code { color: var(--green-dark); transform: translateX(3px); }
+
+/* Arriving at an anchor highlights the target */
+.solution:target,
+.service-block:target,
+.product-row:target {
+  animation: target-flash 2.4s ease-out 300ms both;
+}
+@keyframes target-flash {
+  0%, 30% { background-color: rgba(67, 200, 107, 0.16); }
+  100% { background-color: transparent; }
+}
+
+/* Primary buttons get a little lift */
+.btn-primary:hover { box-shadow: 0 12px 22px -16px rgba(33, 122, 68, 0.9); }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(1px); box-shadow: none; }
+
+/* Service product thumbnails: photo fills the frame */
+.product-row-media {
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--sheet);
+}
+.product-row-media img {
+  height: 172px;
+  padding: 0;
+  border: 0;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-row:hover .product-row-media img { transform: scale(1.05); }
+.service-photo { transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 260ms ease; }
+.service-photo:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+
+/* Rubber stamps press onto the page */
+.stamp-wrap.is-in .stamp {
+  animation: stamp-press 620ms cubic-bezier(0.3, 1.5, 0.5, 1) 260ms both;
+}
+@keyframes stamp-press {
+  0% { opacity: 0; transform: rotate(-14deg) scale(1.7); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: rotate(-4deg) scale(1); }
+}
+.protocol-stub.is-in .stub-stamp {
+  animation: stub-press 560ms cubic-bezier(0.3, 1.5, 0.5, 1) 1100ms both;
+}
+@keyframes stub-press {
+  0% { opacity: 0; transform: rotate(-18deg) scale(1.9); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: rotate(-6deg) scale(1); }
+}
+.protocol-stub { transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1); }
+.protocol-stub:hover { transform: rotate(0deg) translateY(-4px); }
+
+/* FAQ answers slide open */
+.faq summary { transition: color 160ms ease; }
+.faq summary:hover { color: var(--blue); }
+.faq details[open] > :not(summary) {
+  animation: faq-open 340ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes faq-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Floating WhatsApp pings a few times to be noticed */
+.wa-float::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--green);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: wa-ping 2.2s cubic-bezier(0, 0, 0.2, 1) 3.5s 3;
+}
+@keyframes wa-ping {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.35, 1.6); }
+}
+
+/* Footer links nudge on hover */
+.footer-col a { transition: color 160ms ease, padding-left 200ms ease; }
+.footer-col a:hover { padding-left: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .h1-anim .w,
+  .js .reveal-stagger > * { opacity: 1; transform: none; animation: none; }
+  .scroll-progress { display: none; }
+  .btn:hover,
+  .product-plate:hover,
+  .service-photo:hover,
+  .protocol-stub:hover { transform: none; }
 }
